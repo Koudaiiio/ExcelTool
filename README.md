@@ -4,8 +4,10 @@
 使用此项目导表，请将项目目录放在wzxx项目同级目录；
 
 如:
-wzxx
-exceltool
+
+/wzxx
+
+/exceltool
 
 
 首次使用此工具前， 请先双击**install.bat** 初始化工具；
