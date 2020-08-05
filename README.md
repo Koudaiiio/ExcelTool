@@ -6,3 +6,6 @@
 如:
 wzxx
 exceltool
+
+
+首次使用此工具前， 请先双击**install.bat** 初始化工具；
