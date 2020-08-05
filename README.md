@@ -9,3 +9,7 @@ exceltool
 
 
 首次使用此工具前， 请先双击**install.bat** 初始化工具；
+
+之后， 直接双击相应的**genXXX.bat**生成对应的文件
+
+例如：双击 **genCSV.bat**会生成**csv**文件到**g_csv**目录
