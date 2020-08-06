@@ -95,7 +95,7 @@ function genAFile(fileName) {
                 }
                 o[key] = v;
 
-                csv[0][tj] = data[2][j];
+                csv[0][tj] = data[0][j];
                 if (!csv[i - 2]) csv[i - 2] = [];
                 csv[i - 2][tj] = t == "array"
                     ?
