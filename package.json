@@ -8,7 +8,11 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "genCSV": "node aa.js dir=g_csv target=csv excelDir=../wzxx/develop",
+    "genJSON": "node aa.js dir=g_json target=json excelDir=../wzxx/develop",
+    "genTS": "node aa.js dir=g_ts target=ts excelDir=../wzxx/develop",
+    "---":"",
+    "genLang":"node ./langGen.js"
   },
   "author": "",
   "license": "ISC"

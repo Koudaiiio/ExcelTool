@@ -1,6 +1,10 @@
 const fs = require("fs");
 
-let langFile = "jsons/Lang_datas.json";
+let langFile = "g_json/Lang_datas.json";
+if (!fs.existsSync(langFile)) { 
+    console.error("请先生成json文件");
+    return;
+}
 let s = fs.readFileSync(langFile).toString();
 
 /** @type {{ [id: number]: {id:number} }} */
