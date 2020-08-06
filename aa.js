@@ -68,8 +68,8 @@ function genAFile(fileName) {
                 const t = String(data[1][j]).toLowerCase();
                 let v = data[i][j];
 
-                if (key == "undefined") return;
-                if (key.startsWith("comment")) return;
+                if (key == "undefined") continue;
+                if (key.startsWith("comment")) continue;
 
                 try {
 
@@ -83,7 +83,7 @@ function genAFile(fileName) {
                             v = JSON.parse(v)
                         } catch (e) {
                             errorLogs[sheetName].push(`[${i + 1}:${String.fromCharCode(j + A)}]字段${key}的值为array类型，但是解析错误:${v}`);
-                            return;
+                            continue;
                         }
                     } else {
                         v = getCsvValue(t, v);
