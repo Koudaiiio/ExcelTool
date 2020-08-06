@@ -5,12 +5,13 @@
 
 如:
 
-/wzxx
-
+/wzxx  
 /exceltool
 
 
-首次使用此工具前， 请先双击**install.bat** 初始化工具；
+首次使用此工具前：  
+先安装nodejs [https://nodejs.org/en/](https://nodejs.org/en/),已安装请跳过  
+然后双击**install.bat** 初始化工具；
 
 之后， 直接双击相应的**genXXX.bat**生成对应的文件
 
