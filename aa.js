@@ -9,7 +9,7 @@ let path = require('path');
 
 let PATHS = {
     excelDir: "../develop",
-    dir:"gen",
+    dir: "gen",
     log: "",
     target: "json",
     excludes: "色码表.xlsx,配置表说明.xlsx,配置表模版.xlsx"
@@ -78,7 +78,8 @@ function genAFile(fileName) {
                         if (!v || typeof v == "number" || !v.startsWith("[")) {
                             v = v == undefined ? "[]" : `[${v}]`;
                         }
-                        v = String(v).replace(/{/g, "[").replace(/}/g, "]");
+                        // v = String(v).replace(/{/g, "[").replace(/}/g, "]");
+                        v = fillQuotes(v);
                         try {
                             v = JSON.parse(v)
                         } catch (e) {
@@ -160,6 +161,33 @@ function genAFile(fileName) {
         let csvFile = path.join(PATHS.dir, sheetName + ".csv");
         writeFile(csvFile, csvStr);
     }
+}
+
+/**
+ * 
+ * @param {string} arrStr 
+ */
+function fillQuotes(arrStr) {
+    arrStr = String(arrStr).replace(/{/g, "[").replace(/}/g, "]");
+    arrStr = arrStr.split(",").map(s => {
+        return s == "" ? 0 : s;
+    }).join(",");
+    arrStr = arrStr.replace(/,]/g, ",0]");
+
+
+    return arrStr.split("[").map(a => {
+        return a.split("]").map(b => {
+            // console.log(b);
+            return b.split(",").map(c => {
+                // if (b != "" && c == "") return 0;
+                if (c.startsWith('"')) return c;
+                if (c.startsWith("'")) return c.replace(/'/g, '"');
+                return isNaN(c) ? `"${c}"` : c;
+            }).join(",");
+            
+        }).join("]");
+    }).join("[");
+
 }
 
 function writeFile(file, data) {
