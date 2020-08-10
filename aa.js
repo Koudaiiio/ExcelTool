@@ -62,11 +62,11 @@ function genAFile(fileName) {
             let tj = 0;
             for (let j = 0; j < columnLen; j++) {
                 // data[i].forEach((d, j) => {
-                let d = data[i][j];
 
                 const key = String(data[0][j]).trim();
                 const t = String(data[1][j]).toLowerCase();
                 let v = data[i][j];
+                if (j == 0 && !v) break;
 
                 if (key == "undefined") continue;
                 if (key.startsWith("comment")) continue;
@@ -139,8 +139,11 @@ function genAFile(fileName) {
     let firstKey = String(data[0][0]).trim();
 
     let itemsDict = {};
+
     items.forEach(item => {
-        itemsDict[item.id || item[firstKey]] = item;
+        let k = item.id || item[firstKey]
+        if (!k) return;
+        itemsDict[k] = item;
     })
 
     if (PATHS.target == "json") {
@@ -184,7 +187,7 @@ function fillQuotes(arrStr) {
                 if (c.startsWith("'")) return c.replace(/'/g, '"');
                 return isNaN(c) ? `"${c}"` : c;
             }).join(",");
-            
+
         }).join("]");
     }).join("[");
 
