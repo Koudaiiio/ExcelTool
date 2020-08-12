@@ -137,11 +137,16 @@ function genAFile(fileName) {
     // console.log(cls);
 
     let firstKey = String(data[0][0]).trim();
-
+    let specialKey = specialKeys[sheetName];
     let itemsDict = {};
 
     items.forEach(item => {
-        let k = item.id || item[firstKey]
+        let k = item.id || item[firstKey];
+        if (specialKey) {
+            k = specialKey.map(key=>{
+                return item[key];
+            }).join("_");
+        }
         if (!k) return;
         itemsDict[k] = item;
     })
@@ -165,7 +170,10 @@ function genAFile(fileName) {
         writeFile(csvFile, csvStr);
     }
 }
-
+/** @type {{ [sheetName: string]: string[] }} */
+let specialKeys = {
+    "Hero_Break": ["id", "type", "count"]
+}
 /**
  * 
  * @param {string} arrStr 
