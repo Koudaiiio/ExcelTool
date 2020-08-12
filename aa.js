@@ -187,7 +187,8 @@ let specialKeys = {
 }
 /** @type {{ [sheetName: string]: string[][] }} */
 let specialKeys2 = {
-    "Hero_Break": [["id", "type"], ["id", "type", "count"]]
+    "Hero_Break": [["id", "type"], ["id", "type", "count"]],
+    "Hero_Star": [["id"], ["star"]]
 }
 /**
  * 
