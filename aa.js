@@ -136,19 +136,30 @@ function genAFile(fileName) {
     // console.log(items);
     // console.log(cls);
 
-    let firstKey = String(data[0][0]).trim();
-    let specialKey = specialKeys[sheetName];
-    let itemsDict = {};
+    const firstKey = String(data[0][0]).trim();
+    const specialKey = specialKeys[sheetName];
+    const specialKey2 = specialKeys2[sheetName];
+    const itemsDict = {};
 
     items.forEach(item => {
         let k = item.id || item[firstKey];
         if (specialKey) {
-            k = specialKey.map(key=>{
-                return item[key];
-            }).join("_");
+            k = specialKey.map(key => { return item[key]; }).join("_");
         }
+        let k2 = null;
+        if (specialKey2) {
+            k = specialKey2[0].map(key => { return item[key]; }).join("_");
+            k2 = specialKey2[1].map(key => { return item[key]; }).join("_");
+        }
+
         if (!k) return;
-        itemsDict[k] = item;
+        if (k2) {
+            if (!itemsDict[k]) itemsDict[k] = {};
+            itemsDict[k][k2] = item;
+        } else {
+            itemsDict[k] = item;
+        }
+
     })
 
     if (PATHS.target == "json") {
@@ -172,7 +183,11 @@ function genAFile(fileName) {
 }
 /** @type {{ [sheetName: string]: string[] }} */
 let specialKeys = {
-    "Hero_Break": ["id", "type", "count"]
+    // "Hero_Break": ["id", "type", "count"]
+}
+/** @type {{ [sheetName: string]: string[][] }} */
+let specialKeys2 = {
+    "Hero_Break": [["id", "type"], ["id", "type", "count"]]
 }
 /**
  * 
