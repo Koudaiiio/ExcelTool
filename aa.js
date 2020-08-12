@@ -102,7 +102,7 @@ function genAFile(fileName) {
                     ?
                     `"${JSON.stringify(v).replace(/\"/g, "\"\"")}"`
                     :
-                    t == "string" ? `"${v}"` : v;
+                    t == "string" ? `"${String(v).replace(/\"/g, "\"\"")}"` : v;
                 tj++;
 
                 if (t == "number" && isNaN(o[key])) {
