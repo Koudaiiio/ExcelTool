@@ -184,6 +184,8 @@ function genAFile(fileName) {
 /** @type {{ [sheetName: string]: string[] }} */
 let specialKeys = {
     // "Hero_Break": ["id", "type", "count"]
+    "Combat_Attr": ["atom"],
+    "Combat_Halo": ["pos_info"]
 }
 /** @type {{ [sheetName: string]: string[][] }} */
 let specialKeys2 = {
