@@ -53,85 +53,104 @@ function genAFile(fileName) {
 
     let columnLen = data[0].length;
 
-    data.forEach((v, i) => {
-        if (Number(i) > 2) {
-            let o = {};
-            items[Number(i - 3)] = o;
-            // console.log(data[i]);
+    if (PATHS.target != "ts" && PATHS.target != "sql") {
+        data.forEach((v, i) => {
 
-            let tj = 0;
-            for (let j = 0; j < columnLen; j++) {
-                // data[i].forEach((d, j) => {
+            if (Number(i) > 2) {
+                let o = {};
+                items[Number(i - 3)] = o;
+                // console.log(data[i]);
 
-                const key = String(data[0][j]).trim();
-                const t = String(data[1][j]).toLowerCase();
-                let v = data[i][j];
-                if (j == 0 && !v) break;
+                let tj = 0;
+                for (let j = 0; j < columnLen; j++) {
+                    // data[i].forEach((d, j) => {
 
-                if (key == "undefined") continue;
-                if (key.startsWith("comment")) continue;
+                    const key = String(data[0][j]).trim();
+                    const t = String(data[1][j]).toLowerCase();
+                    let v = data[i][j];
+                    if (j == 0 && !v) break;
 
-                try {
+                    if (key == "undefined") continue;
+                    if (key.startsWith("comment")) continue;
 
-                    if (t == "array") {
+                    try {
 
-                        if (!v || typeof v == "number" || !v.startsWith("[")) {
-                            v = v == undefined ? "[]" : `[${v}]`;
+                        if (t == "array") {
+
+                            if (!v || typeof v == "number" || !v.startsWith("[")) {
+                                v = v == undefined ? "[]" : `[${v}]`;
+                            }
+                            // v = String(v).replace(/{/g, "[").replace(/}/g, "]");
+                            v = fillQuotes(v);
+                            try {
+                                v = JSON.parse(v)
+                            } catch (e) {
+                                errorLogs[sheetName].push(`[${i + 1}:${String.fromCharCode(j + A)}]字段${key}的值为array类型，但是解析错误:${v}`);
+                                continue;
+                            }
+                        } else {
+                            v = getCsvValue(t, v);
                         }
-                        // v = String(v).replace(/{/g, "[").replace(/}/g, "]");
-                        v = fillQuotes(v);
-                        try {
-                            v = JSON.parse(v)
-                        } catch (e) {
-                            errorLogs[sheetName].push(`[${i + 1}:${String.fromCharCode(j + A)}]字段${key}的值为array类型，但是解析错误:${v}`);
-                            continue;
-                        }
-                    } else {
-                        v = getCsvValue(t, v);
+                    } catch (e) {
+                        console.log(`%c${sheetName}[${i + 1}:${String.fromCharCode(j + A)}]字段${key}的值解析错误`, "color:red");
+                        // console.log(typeof v);
+                        console.error(e);
                     }
-                } catch (e) {
-                    console.log(`%c${sheetName}[${i + 1}:${String.fromCharCode(j + A)}]字段${key}的值解析错误`, "color:red");
-                    // console.log(typeof v);
-                    console.error(e);
-                }
-                o[key] = v;
+                    o[key] = v;
 
-                csv[0][tj] = data[0][j].trim();
-                if (!csv[i - 2]) csv[i - 2] = [];
-                csv[i - 2][tj] = t == "array"
-                    ?
-                    `"${JSON.stringify(v).replace(/\"/g, "\"\"")}"`
-                    :
-                    t == "string" ? `"${String(v).replace(/\"/g, "\"\"")}"` : v;
-                tj++;
+                    csv[0][tj] = data[0][j].trim();
+                    if (!csv[i - 2]) csv[i - 2] = [];
+                    csv[i - 2][tj] = t == "array"
+                        ?
+                        `"${JSON.stringify(v).replace(/\"/g, "\"\"")}"`
+                        :
+                        t == "string" ? `"${String(v).replace(/\"/g, "\"\"")}"` : v;
+                    tj++;
 
-                if (t == "number" && isNaN(o[key])) {
-                    errorLogs[sheetName].push(`[${i + 1}:${String.fromCharCode(j + A)}]字段${key}的值应为number类型，目前为：${o[key]}`)
-                }
-            };
-        }
-    });
-
+                    if (t == "number" && isNaN(o[key])) {
+                        errorLogs[sheetName].push(`[${i + 1}:${String.fromCharCode(j + A)}]字段${key}的值应为number类型，目前为：${o[key]}`)
+                    }
+                };
+            }
+        });
+    }
 
     let fields = [];
+    let sql_fields = [];
 
-    data[0].forEach((v, i) => {
-        let c = String(data[2][i]);
-        if (!c) return;
-        if (!v || v.startsWith("comment")) return;
+    if (PATHS.target != "ts" || PATHS.target != "sql") {
+        let pk = "";
+        data[0].forEach((v, i) => {
+            let c = String(data[2][i]);
+            if (!c) return;
+            if (!v || v.startsWith("comment")) return;
 
-        let t = String(data[1][i]).toLowerCase();
-        if (t == "array") {
-            t = "any[]";
-        }
-        if (t == "lang") {
-            t = "number"
-        }
-        fields[i] = `\t/**${c} */\n\t${v}:${t}`;
-    });
+            let t = String(data[1][i]).toLowerCase();
+            if (t == "array") {
+                t = "any[]";
+            }
+            if (t == "lang") {
+                t = "number"
+            }
+            fields[i] = `\t/**${c} */\n\t${v}:${t}`;
 
 
-    let cls = `export interface ${sheetName}{\n${fields.join("\n")}\n}`;
+            // `levnumber` int(11) NOT NULL DEFAULT '0' COMMENT '等级',
+            // `icon` varchar(255) NOT NULL DEFAULT '' COMMENT '开启功能图标显示',
+            // PRIMARY KEY (`levnumber`)
+            if (i == 0) {
+                pk = `\tPRIMARY KEY (\`${v}\`)`;
+            }
+            t = t == "number" ? "int(11) NOT NULL DEFAULT '0'" : "varchar(255) NOT NULL DEFAULT ''"
+            sql_fields[i] = `\t\`${v}\` ${t} COMMENT'${c}'`;
+
+        });
+
+        sql_fields.push(pk);
+    }
+
+
+
 
     // console.log(items);
     // console.log(cls);
@@ -167,7 +186,19 @@ function genAFile(fileName) {
 
         writeFile(dataFile, JSON.stringify(itemsDict));
     }
+
+    if (PATHS.target == "sql") {
+        let sqlStr = `CREATE TABLE \`${sheetName.toLowerCase()}\` (\n` +
+            sql_fields.join(",\n") +
+            "\n) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+
+        let sqlFile = path.join(PATHS.dir, sheetName + ".sql");
+        writeFile(sqlFile, sqlStr);
+    }
+
     if (PATHS.target == "ts") {
+        let cls = `export interface ${sheetName}{\n${fields.join("\n")}\n}`;
+
         let classFile = path.join(PATHS.dir, sheetName + ".ts");
         writeFile(classFile, cls);
     }
