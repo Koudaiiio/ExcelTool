@@ -191,7 +191,7 @@ function genAFile(fileName) {
     }
 
     if (PATHS.target == "sql") {
-        let sqlStr = `CREATE TABLE \`${sheetName.toLowerCase()}\` (\n` +
+        let sqlStr = `CREATE TABLE \`config_${sheetName.toLowerCase()}\` (\n` +
             sql_fields.join(",\n") +
             "\n) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
