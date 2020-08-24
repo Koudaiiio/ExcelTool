@@ -120,6 +120,7 @@ function genAFile(fileName) {
 
     if (PATHS.target != "ts" || PATHS.target != "sql") {
         let pk = "";
+        let i2 = 0;
         data[0].forEach((v, i) => {
             let c = String(data[2][i]);
             if (!c) return;
@@ -132,7 +133,7 @@ function genAFile(fileName) {
             if (t == "lang") {
                 t = "number"
             }
-            fields[i] = `\t/**${c} */\n\t${v}:${t}`;
+            fields[i2] = `\t/**${c} */\n\t${v}:${t}`;
 
 
             // `levnumber` int(11) NOT NULL DEFAULT '0' COMMENT '等级',
@@ -142,7 +143,9 @@ function genAFile(fileName) {
                 pk = `\tPRIMARY KEY (\`${v}\`)`;
             }
             t = t == "number" ? "int(11) NOT NULL DEFAULT '0'" : "varchar(255) NOT NULL DEFAULT ''"
-            sql_fields[i] = `\t\`${v}\` ${t} COMMENT'${c}'`;
+            sql_fields[i2] = `\t\`${v}\` ${t} COMMENT'${c}'`;
+
+            i2 ++;
 
         });
 
