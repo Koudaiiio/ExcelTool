@@ -1,6 +1,7 @@
 let xlsx = require('node-xlsx');
 let fs = require('fs');
 let path = require('path');
+const { config } = require('process');
 
 //comment 空的不导出
 //类型验证O
@@ -53,7 +54,7 @@ function genAFile(fileName) {
 
     let columnLen = data[0].length;
 
-    if (PATHS.target != "ts" && PATHS.target != "sql") {
+    if ((PATHS.target != "ts" || configTables.has(sheetName)) && PATHS.target != "sql") {
         data.forEach((v, i) => {
 
             if (Number(i) > 2) {
@@ -145,7 +146,7 @@ function genAFile(fileName) {
             t = t == "number" ? "int(11) NOT NULL DEFAULT '0'" : "varchar(255) NOT NULL DEFAULT ''"
             sql_fields[i2] = `\t\`${v}\` ${t} COMMENT'${c}'`;
 
-            i2 ++;
+            i2++;
 
         });
 
@@ -163,26 +164,35 @@ function genAFile(fileName) {
     const specialKey2 = specialKeys2[sheetName];
     const itemsDict = {};
 
-    items.forEach(item => {
-        let k = item.id || item[firstKey];
-        if (specialKey) {
-            k = specialKey.map(key => { return item[key]; }).join("_");
-        }
-        let k2 = null;
-        if (specialKey2) {
-            k = specialKey2[0].map(key => { return item[key]; }).join("_");
-            k2 = specialKey2[1].map(key => { return item[key]; }).join("_");
-        }
+    if (configTables.has(sheetName)) {
+        fields = [];
+        items.forEach((item, i) => {
+            itemsDict[item.id] = item.value;
+            fields[i] = `\t/**${item.desc} */\n\t${item.id}:any[]`;
+        });
 
-        if (!k) return;
-        if (k2) {
-            if (!itemsDict[k]) itemsDict[k] = {};
-            itemsDict[k][k2] = item;
-        } else {
-            itemsDict[k] = item;
-        }
+    } else {
+        items.forEach(item => {
+            let k = item.id || item[firstKey];
+            if (specialKey) {
+                k = specialKey.map(key => { return item[key]; }).join("_");
+            }
+            let k2 = null;
+            if (specialKey2) {
+                k = specialKey2[0].map(key => { return item[key]; }).join("_");
+                k2 = specialKey2[1].map(key => { return item[key]; }).join("_");
+            }
 
-    })
+            if (!k) return;
+            if (k2) {
+                if (!itemsDict[k]) itemsDict[k] = {};
+                itemsDict[k][k2] = item;
+            } else {
+                itemsDict[k] = item;
+            }
+
+        });
+    }
 
     if (PATHS.target == "json") {
         let dataFile = path.join(PATHS.dir, sheetName + "_datas.json");
@@ -226,6 +236,8 @@ let specialKeys2 = {
     "Hero_Break": [["id", "type"], ["id", "type", "count"]],
     "Hero_Star": [["id"], ["star"]]
 }
+
+let configTables = new Set(["Dungeon_Daily_Config"]);
 /**
  * 
  * @param {string} arrStr 
