@@ -237,7 +237,7 @@ let specialKeys2 = {
     "Hero_Star": [["id"], ["star"]]
 }
 
-let configTables = new Set(["Dungeon_Daily_Config"]);
+let configTables = new Set(["Dungeon_Daily_Config","Dungeon_Tower_Config"]);
 /**
  * 
  * @param {string} arrStr 
@@ -279,6 +279,7 @@ if (PATHS.excelDir == "/") {
     PATHS.excelDir = __dirname;
 }
 function genFromDir(dir) {
+
     let files = fs.readdirSync(dir);
     files.forEach(f => {
         if (excludes.has(f)) return;
@@ -294,7 +295,14 @@ function genFromDir(dir) {
         }
     });
 }
-genFromDir(PATHS.excelDir);
+
+let st = fs.statSync(PATHS.excelDir);
+if (st.isFile() && path.extname(PATHS.excelDir) == ".xlsx") {
+    genAFile(PATHS.excelDir);
+} else {
+    genFromDir(PATHS.excelDir);
+}
+
 // return;
 //check error log
 let lc = 0;
