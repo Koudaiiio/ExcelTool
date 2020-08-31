@@ -101,11 +101,12 @@ function genAFile(fileName) {
 
                     csv[0][tj] = data[0][j].trim();
                     if (!csv[i - 2]) csv[i - 2] = [];
+
                     csv[i - 2][tj] = t == "array"
                         ?
-                        `"${JSON.stringify(v).replace(/\"/g, "\"\"")}"`
+                        `"${JSON.stringify(v).replace(/\"/g, "\"\"").replace(/ /g, "")}"`
                         :
-                        t == "string" ? `"${String(v).replace(/\"/g, "\"\"")}"` : v;
+                        t == "string" ? `"${String(v).replace(/\"/g, "\"\"").replace(/ /g, "")}"` : v;
                     tj++;
 
                     if (t == "number" && isNaN(o[key])) {
@@ -237,7 +238,7 @@ let specialKeys2 = {
     "Hero_Star": [["id"], ["star"]]
 }
 
-let configTables = new Set(["Dungeon_Daily_Config","Dungeon_Tower_Config"]);
+let configTables = new Set(["Dungeon_Daily_Config", "Dungeon_Tower_Config", "Dungeon_Endless_Config"]);
 /**
  * 
  * @param {string} arrStr 
