@@ -51,10 +51,16 @@ function genAFile(fileName) {
     if (data.length < 3) return;
     let items = [];
     let csv = [[]];
+    const firstKey = String(data[0][0]).trim();
+    const secondKey = String(data[0][1]).trim();
+
+    function isConfigSheet() {
+        return sheetName.endsWith("_Config") && secondKey == "value";
+    }
 
     let columnLen = data[0].length;
 
-    if ((PATHS.target != "ts" || configTables.has(sheetName)) && PATHS.target != "sql") {
+    if ((PATHS.target != "ts" || isConfigSheet()) && PATHS.target != "sql") {
         data.forEach((v, i) => {
 
             if (Number(i) > 2) {
@@ -160,16 +166,18 @@ function genAFile(fileName) {
     // console.log(items);
     // console.log(cls);
 
-    const firstKey = String(data[0][0]).trim();
+
     const specialKey = specialKeys[sheetName];
     const specialKey2 = specialKeys2[sheetName];
     const itemsDict = {};
 
-    if (configTables.has(sheetName)) {
+
+    if (isConfigSheet()) {//configTables.has(sheetName)
         fields = [];
         items.forEach((item, i) => {
-            itemsDict[item.id] = item.value;
-            fields[i] = `\t/**${item.desc} */\n\t${item.id}:any[]`;
+            itemsDict[item.id || item[firstKey]] = item.value;
+            const t = !isNaN(item.value) ? "number" : "any[]"
+            fields[i] = `\t/**${item.desc} */\n\t${item.id}:${t}`;
         });
 
     } else {
@@ -230,7 +238,8 @@ function genAFile(fileName) {
 let specialKeys = {
     // "Hero_Break": ["id", "type", "count"]
     "Combat_Attr": ["atom"],
-    "Combat_Halo": ["pos_info"]
+    "Combat_Halo": ["pos_info"],
+    "Dungeon_Endless": ["type", "floor"]
 }
 /** @type {{ [sheetName: string]: string[][] }} */
 let specialKeys2 = {
@@ -238,7 +247,14 @@ let specialKeys2 = {
     "Hero_Star": [["id"], ["star"]]
 }
 
-let configTables = new Set(["Dungeon_Daily_Config", "Dungeon_Tower_Config", "Dungeon_Endless_Config"]);
+
+
+let configTables = new Set([
+    "Dungeon_Daily_Config",
+    "Dungeon_Tower_Config",
+    "Dungeon_Endless_Config",
+    "Guild_Config"
+]);
 /**
  * 
  * @param {string} arrStr 
