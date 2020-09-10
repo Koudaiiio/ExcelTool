@@ -175,9 +175,10 @@ function genAFile(fileName) {
     if (isConfigSheet()) {//configTables.has(sheetName)
         fields = [];
         items.forEach((item, i) => {
-            itemsDict[item.id || item[firstKey]] = item.value;
+            let k = item.id || item[firstKey];
+            itemsDict[k] = item.value;
             const t = !isNaN(item.value) ? "number" : "any[]"
-            fields[i] = `\t/**${item.desc} */\n\t${item.id}:${t}`;
+            fields[i] = `\t/**${item.desc} */\n\t${k}:${t}`;
         });
 
     } else {
@@ -239,7 +240,8 @@ let specialKeys = {
     // "Hero_Break": ["id", "type", "count"]
     "Combat_Attr": ["atom"],
     "Combat_Halo": ["pos_info"],
-    "Dungeon_Endless": ["type", "floor"]
+    "Dungeon_Endless": ["type", "floor"],
+    "Recruit_Adv_Change": ["camp", "star", "hero_id"]
 }
 /** @type {{ [sheetName: string]: string[][] }} */
 let specialKeys2 = {
