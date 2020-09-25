@@ -40,6 +40,8 @@ function getCsvValue(t, v) {
     return v;
 }
 
+let typelist = new Set(["array","string","lang","number","String"])
+
 function genAFile(fileName) {
 
     let sheets = xlsx.parse(fileName);
@@ -79,6 +81,10 @@ function genAFile(fileName) {
 
                     if (key == "undefined") continue;
                     if (key.startsWith("comment")) continue;
+
+                    if(!typelist.has(t)){
+                        errorLogs[sheetName].push(`[${i + 1}:${String.fromCharCode(j + A)}]${key}字段${key}的类型为未知类型：${t}`)
+                    }
 
                     try {
 
@@ -241,12 +247,14 @@ let specialKeys = {
     "Combat_Attr": ["atom"],
     "Combat_Halo": ["pos_info"],
     "Dungeon_Endless": ["type", "floor"],
-    "Recruit_Adv_Change": ["camp", "star", "hero_id"]
+    "Recruit_Adv_Change": ["camp", "star", "hero_id"],
+    // "Event_Checkin": ["month", "day"]
 }
 /** @type {{ [sheetName: string]: string[][] }} */
 let specialKeys2 = {
     "Hero_Break": [["id", "type"], ["id", "type", "count"]],
-    "Hero_Star": [["id"], ["star"]]
+    "Hero_Star": [["id"], ["star"]],
+    "Role_Name": [["sex", "type"], ["sex", "type", "name"]]
 }
 
 
