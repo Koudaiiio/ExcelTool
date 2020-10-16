@@ -12,6 +12,7 @@ let PATHS = {
     excelDir: "../develop",
     dir: "gen",
     log: "",
+    modifyInDays:1000,//多少天之内的才生成    
     target: "json",
     excludes: "色码表.xlsx,配置表说明.xlsx,配置表模版.xlsx"
 };
@@ -305,6 +306,7 @@ function writeFile(file, data) {
 if (PATHS.excelDir == "/") {
     PATHS.excelDir = __dirname;
 }
+let now = Date.now();
 function genFromDir(dir) {
 
     let files = fs.readdirSync(dir);
@@ -316,8 +318,9 @@ function genFromDir(dir) {
             genFromDir(path.join(dir, f));
         } else if (st.isFile()) {
             if (path.extname(f) == ".xlsx") {
+                let d = (now-st.mtimeMs)/3600/24/1000;
                 // console.log("gen file:", f);
-                genAFile(path.join(dir, f));
+                if(d < Number(PATHS.modifyInDays)) genAFile(path.join(dir, f));
             }
         }
     });
