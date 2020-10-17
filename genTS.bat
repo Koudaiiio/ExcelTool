@@ -1,4 +1,4 @@
-node --max-old-space-size=8192 aa.js dir=g_ts target=ts excelDir=../wzxx/develop
+node --max-old-space-size=1500 aa.js dir=g_ts target=ts excelDir=../wzxx/develop
 ::@echo off
 ::set arg1=%1
 ::
