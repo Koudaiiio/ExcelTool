@@ -310,9 +310,9 @@ let now = Date.now();
 function genFromDir(dir) {
 
     let files = fs.readdirSync(dir);
-    files.forEach(f => {
-        if (excludes.has(f)) return;
-        if (f.startsWith('.') || f.startsWith("~")) return;
+    for(let f of files) {
+        if (excludes.has(f)) continue;        
+        if (f.startsWith('.') || f.startsWith("~")) continue;
         let st = fs.statSync(path.join(dir, f));
         if (st.isDirectory()) {
             genFromDir(path.join(dir, f));
@@ -323,7 +323,7 @@ function genFromDir(dir) {
                 if(d < Number(PATHS.modifyInDays)) genAFile(path.join(dir, f));
             }
         }
-    });
+    };
 }
 
 let st = fs.statSync(PATHS.excelDir);
