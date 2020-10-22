@@ -3,6 +3,8 @@ let fs = require('fs');
 let path = require('path');
 const { config } = require('process');
 
+console.log("memory:", process.memoryUsage().heapTotal / 1024 / 1024);
+
 //comment 空的不导出
 //类型验证O
 //不能为空的，必须有值
@@ -12,7 +14,7 @@ let PATHS = {
     excelDir: "../develop",
     dir: "gen",
     log: "",
-    modifyInDays:1000,//多少天之内的才生成    
+    modifyInDays: 1000,//多少天之内的才生成    
     target: "json",
     excludes: "色码表.xlsx,配置表说明.xlsx,配置表模版.xlsx"
 };
@@ -41,7 +43,7 @@ function getCsvValue(t, v) {
     return v;
 }
 
-let typelist = new Set(["array","string","lang","number","String"])
+let typelist = new Set(["array", "string", "lang", "number", "String"])
 
 function genAFile(fileName) {
 
@@ -58,6 +60,7 @@ function genAFile(fileName) {
     const secondKey = String(data[0][1]).trim();
 
     function isConfigSheet() {
+        if(sheetName == "Guild_Config") return false;
         return sheetName.endsWith("_Config") && secondKey == "value";
     }
 
@@ -83,7 +86,7 @@ function genAFile(fileName) {
                     if (key == "undefined") continue;
                     if (key.startsWith("comment")) continue;
 
-                    if(!typelist.has(t)){
+                    if (!typelist.has(t)) {
                         errorLogs[sheetName].push(`[${i + 1}:${String.fromCharCode(j + A)}]${key}字段${key}的类型为未知类型：${t}`)
                     }
 
@@ -185,8 +188,13 @@ function genAFile(fileName) {
             let k = item.id || item[firstKey];
             itemsDict[k] = item.value;
             const t = !isNaN(item.value) ? "number" : "any[]"
-            fields[i] = `\t/**${item.desc} */\n\t${k}:${t}`;
+            fields[i] = `\t/**${item.desc} */\n\t${k}:${t}`;            
+
+            // itemsDict["langs"] = itemsDict["langs"] || {};
+            // itemsDict["langs"][k] = item.desc;
         });
+        // fields.push(`\tlangs:any`)
+
 
     } else {
         items.forEach(item => {
@@ -310,17 +318,17 @@ let now = Date.now();
 function genFromDir(dir) {
 
     let files = fs.readdirSync(dir);
-    for(let f of files) {
-        if (excludes.has(f)) continue;        
+    for (let f of files) {
+        if (excludes.has(f)) continue;
         if (f.startsWith('.') || f.startsWith("~")) continue;
         let st = fs.statSync(path.join(dir, f));
         if (st.isDirectory()) {
             genFromDir(path.join(dir, f));
         } else if (st.isFile()) {
             if (path.extname(f) == ".xlsx") {
-                let d = (now-st.mtimeMs)/3600/24/1000;
+                let d = (now - st.mtimeMs) / 3600 / 24 / 1000;
                 // console.log("gen file:", f);
-                if(d < Number(PATHS.modifyInDays)) genAFile(path.join(dir, f));
+                if (d < Number(PATHS.modifyInDays)) genAFile(path.join(dir, f));
             }
         }
     };
