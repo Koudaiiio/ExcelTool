@@ -8,11 +8,11 @@
   },
   "devDependencies": {},
   "scripts": {
-    "genCSV": "node aa.js dir=g_csv target=csv excelDir=../wzxx/develop",
-    "genJSON": "node aa.js dir=g_json target=json excelDir=../wzxx/develop",
-    "genJSONinDays":"node aa.js dir=g_json target=json excelDir=../wzxx/develop modifyInDays=0.1",
-    "genTS": "node aa.js dir=g_ts target=ts excelDir=../wzxx/develop",
-    "genSQL": "node aa.js dir=g_sql target=sql excelDir=../wzxx/develop",
+    "genCSV": "node --max-old-space-size=1500 aa.js dir=g_csv target=csv excelDir=../wzxx/develop",
+    "genJSON": "node --max-old-space-size=1500 aa.js dir=g_json target=json excelDir=../wzxx/develop",
+    "genJSONinDays":"node --max-old-space-size=1500 aa.js dir=g_json target=json excelDir=../wzxx/develop modifyInDays=0.1",
+    "genTS": "node --max-old-space-size=1500 aa.js dir=g_ts target=ts excelDir=../wzxx/develop",
+    "genSQL": "node --max-old-space-size=1500 aa.js dir=g_sql target=sql excelDir=../wzxx/develop",
     "---":"",
     "genLang":"node ./langGen.js"
   },
