@@ -48,11 +48,21 @@ let typelist = new Set(["array", "string", "lang", "number", "String"])
 function genAFile(fileName) {
 
     let sheets = xlsx.parse(fileName);
-    let sheetName = sheets[0].name;
+    console.log(sheets.map(s=>{
+        return s.name;
+    }));
+    let s = sheets[0];
+    // console.log(s.name, typeof s.name);
+    if(!isNaN(s.name)){
+        s = sheets.find(s=>{
+            return s.name.includes("_");
+        }) || s;        
+    }
+    let sheetName = s.name;
 
     errorLogs[sheetName] = [];
 
-    let data = sheets[0].data;
+    let data = s.data;
     if (data.length < 3) return;
     let items = [];
     let csv = [[]];
