@@ -48,9 +48,9 @@ let typelist = new Set(["array", "string", "lang", "number", "String"])
 function genAFile(fileName) {
 
     let sheets = xlsx.parse(fileName);
-    console.log(sheets.map(s=>{
-        return s.name;
-    }));
+    // console.log(sheets.map(s=>{
+    //     return s.name;
+    // }));
     let s = sheets[0];
     // console.log(s.name, typeof s.name);
     if(!isNaN(s.name)){
