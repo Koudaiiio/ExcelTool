@@ -91,7 +91,10 @@ function genAFile(fileName) {
                     const key = String(data[0][j]).trim();
                     const t = String(data[1][j]).toLowerCase();
                     let v = data[i][j];
-                    if (j == 0 && !v) break;
+                    if (j == 0 && (v == undefined || v == null)) {
+                        // console.log("break coz:",v);
+                        break;
+                    }
 
                     if (key == "undefined") continue;
                     if (key.startsWith("comment")) continue;
@@ -218,7 +221,8 @@ function genAFile(fileName) {
                 k2 = specialKey2[1].map(key => { return item[key]; }).join("_");
             }
 
-            if (!k) return;
+            if (k == undefined || k == null) return;
+            console.log(k);
             if (k2) {
                 if (!itemsDict[k]) itemsDict[k] = {};
                 itemsDict[k][k2] = item;
