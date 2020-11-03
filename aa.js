@@ -132,7 +132,7 @@ async function genAFile(fileName, st) {
     const secondKey = String(data[0][mode-0]).trim();
 
     function isConfigSheet() {
-        if (sheetName == "Guild_Config") return false;
+        if (sheetName == "Guild_Config" || sheetName == "Charge_Config" || sheetName == "Guild_Skill_Config") return false;
         else if(sheetName == "Hero_Config") return false;
         else if(sheetName == "Artifact_Config") return false;
         else if(sheetName == "Rune_Config") return false;
