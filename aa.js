@@ -133,6 +133,10 @@ async function genAFile(fileName, st) {
 
     function isConfigSheet() {
         if (sheetName == "Guild_Config") return false;
+        else if(sheetName == "Hero_Config") return false;
+        else if(sheetName == "Artifact_Config") return false;
+        else if(sheetName == "Rune_Config") return false;
+        else if(sheetName == "Talent_Config") return false;
         return sheetName.endsWith("_Config") && secondKey == "value";
     }
 
