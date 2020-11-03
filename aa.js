@@ -2,8 +2,10 @@ let xlsx = require('node-xlsx');
 let fs = require('fs');
 let path = require('path');
 const { config } = require('process');
-
-console.log("memory:", process.memoryUsage().heapTotal / 1024 / 1024);
+const { time, timeEnd } = require('console');
+const execSync = require('child_process').execSync;
+const Excel = require('exceljs-fast');
+// console.log("memory:", process.memoryUsage().heapTotal / 1024 / 1024);
 
 //comment 空的不导出
 //类型验证O
@@ -16,7 +18,7 @@ let PATHS = {
     log: "",
     modifyInDays: 1000,//多少天之内的才生成    
     target: "json",
-    excludes: "色码表.xlsx,配置表说明.xlsx,配置表模版.xlsx"
+    excludes: "色码表.xlsx,配置表说明.xlsx,配置表模版.xlsx,配置表模板.xlsx"
 };
 
 let ags = process.argv.splice(2);
@@ -45,32 +47,92 @@ function getCsvValue(t, v) {
 
 let typelist = new Set(["array", "string", "lang", "number", "String"])
 
-function genAFile(fileName) {
 
+async function read1(fileName) {
     let sheets = xlsx.parse(fileName);
-    // console.log(sheets.map(s=>{
-    //     return s.name;
-    // }));
+
     let s = sheets[0];
-    // console.log(s.name, typeof s.name);
-    if(!isNaN(s.name)){
-        s = sheets.find(s=>{
+
+    if (!isNaN(s.name)) {
+        s = sheets.find(s => {
             return s.name.includes("_");
-        }) || s;        
+        }) || s;
     }
     let sheetName = s.name;
 
     errorLogs[sheetName] = [];
 
     let data = s.data;
+
+    return [sheetName, data, 1];
+}
+
+async function read2(fileName, st) {
+    const workbook = new Excel.Workbook();
+
+    time("解析表格" + fileName);
+    console.log(fileName, "文件尺寸:", st.size);
+    workbook.clearThemes()
+    await workbook.xlsx.readFile(fileName);
+    timeEnd("解析表格" + fileName);
+    let sheet = workbook.worksheets[0];
+    let data = sheet.getSheetValues();
+    data.shift();
+    let sheetName = sheet.name;
+    errorLogs[sheetName] = [];
+
+    return [sheetName, data, 2]
+}
+
+/**
+ * 
+ * @param {*} fileName 
+ * @param {fs.Stats} st 
+ */
+async function genAFile(fileName, st) {
+
+    let [sheetName, data, mode] = await (
+        (fileName.endsWith("Combat_Buff.xlsx")
+            || fileName.endsWith("Dungeon_Planes_Hero_Robot.xlsx")
+            || fileName.endsWith("Item.xlsx")
+            || fileName.endsWith("Unit_Dun_Endless_Attr.xlsx")
+        )
+            ?
+            read1(fileName)
+            :
+            read2(fileName, st)
+    );
+
+    // time("解析表格");
+    // console.log(fileName, "文件尺寸:", st.size);
+    // timeEnd("解析表格");
+
+
+
+
+
+
+    // let output = execSync('python aa.py '+fileName)     
+    // output = (output.toString()).replace(/\"<<\"/g, '"').replace(/<<\"/g, '"').replace(/\">>/g, '"').replace(/null/g, '')
+    // let d = JSON.parse(output);    
+    // let sheetName = d.n;
+    // let data = d.a;
+    // console.log(sheetName);
+
+
+    // return;
+    if (sheetName == "配置表") {
+        return;
+    }
+
     if (data.length < 3) return;
     let items = [];
     let csv = [[]];
-    const firstKey = String(data[0][0]).trim();
-    const secondKey = String(data[0][1]).trim();
+    const firstKey = String(data[0][mode-1]).trim();
+    const secondKey = String(data[0][mode-0]).trim();
 
     function isConfigSheet() {
-        if(sheetName == "Guild_Config") return false;
+        if (sheetName == "Guild_Config") return false;
         return sheetName.endsWith("_Config") && secondKey == "value";
     }
 
@@ -78,7 +140,7 @@ function genAFile(fileName) {
 
     if ((PATHS.target != "ts" || isConfigSheet()) && PATHS.target != "sql") {
         data.forEach((v, i) => {
-
+            if (mode == 2) data[i].shift();
             if (Number(i) > 2) {
                 let o = {};
                 items[Number(i - 3)] = o;
@@ -103,15 +165,21 @@ function genAFile(fileName) {
                         errorLogs[sheetName].push(`[${i + 1}:${String.fromCharCode(j + A)}]${key}字段${key}的类型为未知类型：${t}`)
                     }
 
+                    if (v && typeof v == "object") {
+                        v = v["result"] || undefined;
+                    }
+
                     try {
 
-                        if (t == "array") {
-
+                        if (t == "array") {                            
                             if (!v || typeof v == "number" || !v.startsWith("[")) {
                                 v = v == undefined ? "[]" : `[${v}]`;
                             }
-                            // v = String(v).replace(/{/g, "[").replace(/}/g, "]");
-                            v = fillQuotes(v);
+                            // if (v.match(/[a-z]/ig)) {
+                            v = fillQuotes(v);//如果包含字母，则填充引号 //
+                            // } else {
+                            //     v = String(v).replace(/{/g, "[").replace(/}/g, "]");
+                            // }
                             try {
                                 v = JSON.parse(v)
                             } catch (e) {
@@ -128,10 +196,10 @@ function genAFile(fileName) {
                     }
                     o[key] = v;
 
-                    csv[0][tj] = data[0][j].trim();
-                    if (!csv[i - 2]) csv[i - 2] = [];
+                    if (PATHS.target == "csv") csv[0][tj] = data[0][j].trim();
+                    if (PATHS.target == "csv") if (!csv[i - 2]) csv[i - 2] = [];
 
-                    csv[i - 2][tj] = t == "array"
+                    if (PATHS.target == "csv") csv[i - 2][tj] = t == "array"
                         ?
                         `"${JSON.stringify(v).replace(/\"/g, "\"\"").replace(/ /g, "")}"`
                         :
@@ -192,7 +260,7 @@ function genAFile(fileName) {
 
     const specialKey = specialKeys[sheetName];
     const specialKey2 = specialKeys2[sheetName];
-    const itemsDict = {};
+    let itemsDict = {};
 
 
     if (isConfigSheet()) {//configTables.has(sheetName)
@@ -201,7 +269,7 @@ function genAFile(fileName) {
             let k = item.id || item[firstKey];
             itemsDict[k] = item.value;
             const t = !isNaN(item.value) ? "number" : "any[]"
-            fields[i] = `\t/**${item.desc} */\n\t${k}:${t}`;            
+            fields[i] = `\t/**${item.desc} */\n\t${k}:${t}`;
 
             // itemsDict["langs"] = itemsDict["langs"] || {};
             // itemsDict["langs"][k] = item.desc;
@@ -222,7 +290,7 @@ function genAFile(fileName) {
             }
 
             if (k == undefined || k == null) return;
-            console.log(k);
+            // console.log(k);
             if (k2) {
                 if (!itemsDict[k]) itemsDict[k] = {};
                 itemsDict[k][k2] = item;
@@ -263,6 +331,13 @@ function genAFile(fileName) {
         let csvFile = path.join(PATHS.dir, sheetName + ".csv");
         writeFile(csvFile, csvStr);
     }
+
+    data.length = 0;    
+    items.length = 0;
+    itemsDict = {};
+    fields.length = 0;
+    csv.length = 0;
+    sql_fields.length = 0;
 }
 /** @type {{ [sheetName: string]: string[] }} */
 let specialKeys = {
@@ -329,7 +404,7 @@ if (PATHS.excelDir == "/") {
     PATHS.excelDir = __dirname;
 }
 let now = Date.now();
-function genFromDir(dir) {
+async function genFromDir(dir) {
 
     let files = fs.readdirSync(dir);
     for (let f of files) {
@@ -337,23 +412,29 @@ function genFromDir(dir) {
         if (f.startsWith('.') || f.startsWith("~")) continue;
         let st = fs.statSync(path.join(dir, f));
         if (st.isDirectory()) {
-            genFromDir(path.join(dir, f));
+            await genFromDir(path.join(dir, f));
         } else if (st.isFile()) {
             if (path.extname(f) == ".xlsx") {
                 let d = (now - st.mtimeMs) / 3600 / 24 / 1000;
-                // console.log("gen file:", f);
-                if (d < Number(PATHS.modifyInDays)) genAFile(path.join(dir, f));
+                // console.log("gen file:", f);                
+                if (d < Number(PATHS.modifyInDays)) await genAFile(path.join(dir, f), st);
             }
         }
     };
 }
 
-let st = fs.statSync(PATHS.excelDir);
-if (st.isFile() && path.extname(PATHS.excelDir) == ".xlsx") {
-    genAFile(PATHS.excelDir);
-} else {
-    genFromDir(PATHS.excelDir);
+async function run(){
+    time("总消耗");
+    let st = fs.statSync(PATHS.excelDir);
+    if (st.isFile() && path.extname(PATHS.excelDir) == ".xlsx") {
+        await genAFile(PATHS.excelDir, st);
+    } else {
+        await genFromDir(PATHS.excelDir);
+    }
+    timeEnd("总消耗");
 }
+
+run();
 
 // return;
 //check error log

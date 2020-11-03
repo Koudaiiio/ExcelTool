@@ -3,18 +3,20 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "dependencies": {
+  "dependencies": {    
+    "exceljs-fast": "^5.0.0",
     "node-xlsx": "^0.15.0"
   },
   "devDependencies": {},
   "scripts": {
     "genCSV": "node --max-old-space-size=1500 aa.js dir=g_csv target=csv excelDir=../wzxx/develop",
     "genJSON": "node --max-old-space-size=1500 aa.js dir=g_json target=json excelDir=../wzxx/develop",
-    "genJSONinDays":"node --max-old-space-size=1500 aa.js dir=g_json target=json excelDir=../wzxx/develop modifyInDays=0.1",
+    "genJSONinDays": "node --max-old-space-size=1500 aa.js dir=g_json target=json excelDir=../wzxx/develop modifyInDays=0.1",
     "genTS": "node --max-old-space-size=1500 aa.js dir=g_ts target=ts excelDir=../wzxx/develop",
     "genSQL": "node --max-old-space-size=1500 aa.js dir=g_sql target=sql excelDir=../wzxx/develop",
-    "---":"",
-    "genLang":"node ./langGen.js"
+    "---": "",
+    "genLang": "node ./langGen.js",
+    "testGen": "node --max-old-space-size=1500 aa.js dir=g_json target=json excelDir=../wzxx/develop/vip/Vip.xlsx"
   },
   "author": "",
   "license": "ISC"
