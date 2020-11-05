@@ -129,15 +129,15 @@ async function genAFile(fileName, st) {
     if (data.length < 3) return;
     let items = [];
     let csv = [[]];
-    const firstKey = String(data[0][mode-1]).trim();
-    const secondKey = String(data[0][mode-0]).trim();
+    const firstKey = String(data[0][mode - 1]).trim();
+    const secondKey = String(data[0][mode - 0]).trim();
 
     function isConfigSheet() {
         if (sheetName == "Guild_Config" || sheetName == "Charge_Config" || sheetName == "Guild_Skill_Config") return false;
-        else if(sheetName == "Hero_Config") return false;
-        else if(sheetName == "Artifact_Config") return false;
-        else if(sheetName == "Rune_Config") return false;
-        else if(sheetName == "Talent_Config") return false;
+        else if (sheetName == "Hero_Config") return false;
+        else if (sheetName == "Artifact_Config") return false;
+        else if (sheetName == "Rune_Config") return false;
+        else if (sheetName == "Talent_Config") return false;
         return sheetName.endsWith("_Config") && secondKey == "value";
     }
 
@@ -176,7 +176,7 @@ async function genAFile(fileName, st) {
 
                     try {
 
-                        if (t == "array") {                            
+                        if (t == "array") {
                             if (!v || typeof v == "number" || !v.startsWith("[")) {
                                 v = v == undefined ? "[]" : `[${v}]`;
                             }
@@ -272,7 +272,7 @@ async function genAFile(fileName, st) {
         fields = [];
         items.forEach((item, i) => {
             let k = item.id || item[firstKey];
-            itemsDict[k] = {value:item.value,desc:item.desc, des: item.des};
+            itemsDict[k] = { value: item.value, desc: item.desc, des: item.des };
             let t = !isNaN(item.value) ? "number" : "any[]"
             t = `{value:${t};desc:number,des:number}`;
             fields[i] = `\t/**${item.desc} */\n\t${k}:${t}`;
@@ -338,7 +338,7 @@ async function genAFile(fileName, st) {
         writeFile(csvFile, csvStr);
     }
 
-    data.length = 0;    
+    data.length = 0;
     items.length = 0;
     itemsDict = {};
     fields.length = 0;
@@ -416,11 +416,22 @@ async function genFromDir(dir) {
     for (let f of files) {
         if (excludes.has(f)) continue;
         if (f.startsWith('.') || f.startsWith("~")) continue;
+
         let st = fs.statSync(path.join(dir, f));
+
         if (st.isDirectory()) {
             await genFromDir(path.join(dir, f));
+
         } else if (st.isFile()) {
             if (path.extname(f) == ".xlsx") {
+                let csvFile = path.join(PATHS.dir, path.basename(f).replace(".xlsx", "."+PATHS.target));
+                if (fs.existsSync(csvFile)) {
+                    let cst = fs.statSync(csvFile);
+                    if (Math.max(cst.mtimeMs, cst.atimeMs) > Math.max(st.mtimeMs, st.atimeMs)) {
+                        console.log("skip file:" + f);
+                        continue;
+                    }
+                }
                 let d = (now - st.mtimeMs) / 3600 / 24 / 1000;
                 // console.log("gen file:", f);                
                 if (d < Number(PATHS.modifyInDays)) await genAFile(path.join(dir, f), st);
@@ -429,7 +440,7 @@ async function genFromDir(dir) {
     };
 }
 
-async function run(){
+async function run() {
     time("总消耗");
     let st = fs.statSync(PATHS.excelDir);
     if (st.isFile() && path.extname(PATHS.excelDir) == ".xlsx") {
