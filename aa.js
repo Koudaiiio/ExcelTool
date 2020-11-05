@@ -18,7 +18,7 @@ let PATHS = {
     log: "",
     modifyInDays: 1000,//多少天之内的才生成    
     target: "json",
-    excludes: "色码表.xlsx,配置表说明.xlsx,配置表模版.xlsx,配置表模板.xlsx"
+    excludes: "色码表.xlsx,配置表说明.xlsx,配置表模版.xlsx,配置表模板.xlsx,ui翻译.xlsx,Unit_ Template.xlsx"
 };
 
 let ags = process.argv.splice(2);
@@ -424,9 +424,11 @@ async function genFromDir(dir) {
 
         } else if (st.isFile()) {
             if (path.extname(f) == ".xlsx") {
-                let csvFile = path.join(PATHS.dir, path.basename(f).replace(".xlsx", "."+PATHS.target));
-                if (fs.existsSync(csvFile)) {
-                    let cst = fs.statSync(csvFile);
+
+                let targetFile = path.join(PATHS.dir, path.basename(f).
+                    replace(".xlsx", (PATHS.target == "json" ? "_datas." : ".") + PATHS.target));
+                if (fs.existsSync(targetFile)) {
+                    let cst = fs.statSync(targetFile);
                     if (Math.max(cst.mtimeMs, cst.atimeMs) > Math.max(st.mtimeMs, st.atimeMs)) {
                         console.log("skip file:" + f);
                         continue;
@@ -448,6 +450,25 @@ async function run() {
     } else {
         await genFromDir(PATHS.excelDir);
     }
+
+    let lc = 0;
+    let ec = 0;
+    for (let k in errorLogs) {
+        let l = errorLogs[k];
+        if (l.length > 0) {
+            lc += 1;
+            ec += l.length;
+        }
+    }
+
+    let logFile = path.join(PATHS.log, "log.json");
+    if (lc > 0) {
+        console.error(`%c总计有${lc}个表格产生${ec}个错误, 请打开logs.json查看详情`, "color:red");
+        fs.writeFileSync(logFile, JSON.stringify(errorLogs, null, "\t"));
+    } else {
+        console.log(`%c没有发现错误`, "color:green");
+        fs.writeFileSync(logFile, '');
+    }
     timeEnd("总消耗");
 }
 
@@ -455,23 +476,6 @@ run();
 
 // return;
 //check error log
-let lc = 0;
-let ec = 0;
-for (let k in errorLogs) {
-    let l = errorLogs[k];
-    if (l.length > 0) {
-        lc += 1;
-        ec += l.length;
-    }
-}
 
-let logFile = path.join(PATHS.log, "log.json");
-if (lc > 0) {
-    console.log(`%c总计有${lc}个表格产生${ec}个错误, 请打开logs.json查看详情`, "color:red");
-    fs.writeFileSync(logFile, JSON.stringify(errorLogs, null, "\t"));
-} else {
-    console.log(`%c没有发现错误`, "color:green");
-    fs.writeFileSync(logFile, '');
-}
 
 
