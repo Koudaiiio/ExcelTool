@@ -96,6 +96,7 @@ async function genAFile(fileName, st) {
             || fileName.endsWith("Dungeon_Planes_Hero_Robot.xlsx")
             || fileName.endsWith("Item.xlsx")
             || fileName.endsWith("Unit_Dun_Endless_Attr.xlsx")
+            || fileName.endsWith("Skill_Passive_Effect.xlsx")
         )
             ?
             read1(fileName)
