@@ -271,8 +271,9 @@ async function genAFile(fileName, st) {
         fields = [];
         items.forEach((item, i) => {
             let k = item.id || item[firstKey];
-            itemsDict[k] = item.value;
-            const t = !isNaN(item.value) ? "number" : "any[]"
+            itemsDict[k] = {value:item.value,desc:item.desc, des: item.des};
+            let t = !isNaN(item.value) ? "number" : "any[]"
+            t = `{value:${t};desc:number,des:number}`;
             fields[i] = `\t/**${item.desc} */\n\t${k}:${t}`;
 
             // itemsDict["langs"] = itemsDict["langs"] || {};
