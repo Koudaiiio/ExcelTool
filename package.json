@@ -9,14 +9,14 @@
   },
   "devDependencies": {},
   "scripts": {
-    "genCSV": "node --max-old-space-size=1500 aa.js dir=g_csv target=csv excelDir=../wzxx/develop",
-    "genJSON": "node --max-old-space-size=1500 aa.js dir=g_json target=json excelDir=../wzxx/develop",
-    "genJSONinDays": "node --max-old-space-size=1500 aa.js dir=g_json target=json excelDir=../wzxx/develop modifyInDays=0.1",
-    "genTS": "node --max-old-space-size=1500 aa.js dir=g_ts target=ts excelDir=../wzxx/develop",
-    "genSQL": "node --max-old-space-size=1500 aa.js dir=g_sql target=sql excelDir=../wzxx/develop",
+    "genCSV": "node --max-old-space-size=1500 aa.js dir=g_csv target=csv excelDir=../Design/develop",
+    "genJSON": "node --max-old-space-size=1500 aa.js dir=g_json target=json excelDir=../Design/develop",
+    "genJSONinDays": "node --max-old-space-size=1500 aa.js dir=g_json target=json excelDir=../Design/develop modifyInDays=0.1",
+    "genTS": "node --max-old-space-size=1500 aa.js dir=g_ts target=ts excelDir=../Design/develop",
+    "genSQL": "node --max-old-space-size=1500 aa.js dir=g_sql target=sql excelDir=../Design/develop",
     "---": "",
     "genLang": "node ./langGen.js",
-    "testGen": "node --max-old-space-size=1500 aa.js dir=g_json target=json excelDir=../wzxx/develop/vip/Vip.xlsx"
+    "testGen": "node --max-old-space-size=1500 aa.js dir=g_json target=json excelDir=../Design/develop/vip"
   },
   "author": "",
   "license": "ISC"

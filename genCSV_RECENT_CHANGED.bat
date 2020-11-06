@@ -1,1 +1,1 @@
-node --max-old-space-size=1500 aa.js dir=g_csv target=csv excelDir=../wzxx/develop modifyInDays=0.1
+node --max-old-space-size=1500 aa.js dir=g_csv target=csv excelDir=../Design/develop modifyInDays=0.1
