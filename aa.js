@@ -352,6 +352,7 @@ let specialKeys = {
     "Combat_Halo": ["pos_info"],
     "Dungeon_Endless": ["type", "floor"],
     "Recruit_Adv_Change": ["camp", "star", "hero_id"],
+    "Dungeon_Planes_Map": ["id", "raw"]
     // "Event_Checkin": ["month", "day"]
 }
 /** @type {{ [sheetName: string]: string[][] }} */
