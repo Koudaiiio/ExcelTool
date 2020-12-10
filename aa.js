@@ -243,7 +243,7 @@ async function genAFile(fileName, st) {
             // `levnumber` int(11) NOT NULL DEFAULT '0' COMMENT '等级',
             // `icon` varchar(255) NOT NULL DEFAULT '' COMMENT '开启功能图标显示',
             // PRIMARY KEY (`levnumber`)
-            if (i == 0) {
+            if ((mode == 1 && i == 0) || (mode == 2 && i == 1)) {
                 pk = `\tPRIMARY KEY (\`${v}\`)`;
             }
             t = t == "number" ? "int(11) NOT NULL DEFAULT '0'" : "varchar(255) NOT NULL DEFAULT ''"
@@ -273,7 +273,7 @@ async function genAFile(fileName, st) {
         items.forEach((item, i) => {
             let k = item.id || item[firstKey];
             itemsDict[k] = { value: item.value, desc: item.desc, des: item.des };
-            let t = !isNaN(item.value) ? "number" : "any[]"
+            let t = "any[]";//!isNaN(item.value) ? "number" : "any[]"
             t = `{value:${t};desc:number,des:number}`;
             fields[i] = `\t/**${item.desc} */\n\t${k}:${t}`;
 
