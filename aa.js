@@ -138,6 +138,7 @@ async function genAFile(fileName, st) {
         else if (sheetName == "Artifact_Config") return false;
         else if (sheetName == "Rune_Config") return false;
         else if (sheetName == "Talent_Config") return false;
+        else if (sheetName == "Dungeon_Main_Config") return false;
         return sheetName.endsWith("_Config") && secondKey == "value";
     }
 
