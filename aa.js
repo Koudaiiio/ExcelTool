@@ -39,6 +39,7 @@ function getCsvValue(t, v) {
             return "[]";
         case "string":
             return "";
+        case "lang":
         case "number":
             return 0;
     }
