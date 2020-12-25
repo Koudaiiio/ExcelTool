@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "dependencies": {    
+  "dependencies": {
     "exceljs-fast": "^5.0.0",
-    "node-xlsx": "^0.15.0"
+    "node-xlsx": "^0.15.0",
+    "pako": "^1.0.11"
   },
   "devDependencies": {},
   "scripts": {

@@ -4,6 +4,7 @@ g_json
 g_csv
 g_ts
 g_sql
+g_json_entrypted
 package-lock.json
 test.js
 test2.js

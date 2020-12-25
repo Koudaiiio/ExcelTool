@@ -5,6 +5,7 @@ const { config } = require('process');
 const { time, timeEnd } = require('console');
 const execSync = require('child_process').execSync;
 const Excel = require('exceljs-fast');
+const entryptFile = require('./dataEntrypt');
 // console.log("memory:", process.memoryUsage().heapTotal / 1024 / 1024);
 
 //comment 空的不导出
@@ -312,8 +313,8 @@ async function genAFile(fileName, st) {
 
     if (PATHS.target == "json") {
         let dataFile = path.join(PATHS.dir, sheetName + "_datas.json");
-
         writeFile(dataFile, JSON.stringify(itemsDict));
+        entryptFile(sheetName + "_datas.json", PATHS.dir);
     }
 
     if (PATHS.target == "sql") {
