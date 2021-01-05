@@ -6,6 +6,7 @@ const { time, timeEnd } = require('console');
 const execSync = require('child_process').execSync;
 const Excel = require('exceljs-fast');
 const entryptFile = require('./dataEntrypt');
+const output = require("./outputDir")
 // console.log("memory:", process.memoryUsage().heapTotal / 1024 / 1024);
 
 //comment 空的不导出
@@ -312,7 +313,7 @@ async function genAFile(fileName, st) {
     }
 
     if (PATHS.target == "json") {
-        let dataFile = path.join(PATHS.dir, sheetName + "_datas.json");
+        let dataFile = path.join(output.json_dir || PATHS.dir, sheetName + "_datas.json");
         writeFile(dataFile, JSON.stringify(itemsDict));
         entryptFile(sheetName + "_datas.json", PATHS.dir);
     }
@@ -322,14 +323,14 @@ async function genAFile(fileName, st) {
             sql_fields.join(",\n") +
             "\n) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
-        let sqlFile = path.join(PATHS.dir, sheetName + ".sql");
+        let sqlFile = path.join(output.sql_dir || PATHS.dir, sheetName + ".sql");
         writeFile(sqlFile, sqlStr);
     }
 
     if (PATHS.target == "ts") {
         let cls = `export interface ${sheetName}{\n${fields.join("\n")}\n}`;
 
-        let classFile = path.join(PATHS.dir, sheetName + ".ts");
+        let classFile = path.join(output.ts_dir || PATHS.dir, sheetName + ".ts");
         writeFile(classFile, cls);
     }
 
@@ -338,7 +339,7 @@ async function genAFile(fileName, st) {
         csv.forEach(r => {
             csvStr += r.join(",") + "\r\n";
         })
-        let csvFile = path.join(PATHS.dir, sheetName + ".csv");
+        let csvFile = path.join(output.csv_dir || PATHS.dir, sheetName + ".csv");
         writeFile(csvFile, csvStr);
     }
 
@@ -430,7 +431,8 @@ async function genFromDir(dir) {
         } else if (st.isFile()) {
             if (path.extname(f) == ".xlsx") {
 
-                let targetFile = path.join(PATHS.dir, path.basename(f).
+                let odir = output[PATHS.target + "_dir"];
+                let targetFile = path.join(odir, path.basename(f).
                     replace(".xlsx", (PATHS.target == "json" ? "_datas." : ".") + PATHS.target));
                 if (fs.existsSync(targetFile)) {
                     let cst = fs.statSync(targetFile);

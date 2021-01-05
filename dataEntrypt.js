@@ -1,6 +1,7 @@
 let fs = require("fs")
 let path = require("path")
-let pako = require("pako")
+let pako = require("pako");
+const outputDir = require("./outputDir");
 
 let origindir = "g_json";
 let targetDir = "g_json_entrypted";
@@ -32,7 +33,7 @@ module.exports = function entryptFile(f, dir) {
         let str = fs.readFileSync(p, { encoding: "utf8" });
         let s = pako.deflate(str, { to: 'string' });
 
-        let ep = p.replace(path.normalize(origindir), path.normalize(targetDir)).replace(".json", ".txt");
+        let ep = p.replace(path.normalize(outputDir.json_dir), path.normalize(outputDir.json_entrypted_dir)).replace(".json", ".txt");
         writeFile(ep, s);
     }
 }
