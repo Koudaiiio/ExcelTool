@@ -8,4 +8,3 @@ g_json_entrypted
 package-lock.json
 test.js
 test2.js
-outputDir.js
