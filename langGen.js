@@ -1,4 +1,5 @@
 const fs = require("fs");
+const entryptFile = require('./dataEntrypt');
 
 let langFile = "g_json/Lang_datas.json";
 if (!fs.existsSync(langFile)) { 
@@ -21,5 +22,6 @@ for (let id in langs) {
 s = JSON.stringify(langDict);
 s = s.replace(/sChinese/g, "cn").replace(/english/g, "eng");
 fs.writeFileSync("lang.json", s);
+entryptFile("lang.json", "./");
 // console.log(langDict.sChinese[1100080151]);
     // fs.writeFileSync(dataFile, JSON.stringify(items));
