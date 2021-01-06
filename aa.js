@@ -101,6 +101,10 @@ async function genAFile(fileName, st) {
             || fileName.endsWith("Unit_Dun_Endless_Attr.xlsx")
             || fileName.endsWith("Skill_Passive_Effect.xlsx")
             || fileName.endsWith("Charge_Push_Gift.xlsx")
+            || fileName.endsWith("Charge_Gift.xlsx")
+            || fileName.endsWith("Dungeon_Planes_Buff.xlsx")
+            || fileName.endsWith("Dungeon_Planes_Buff_Group.xlsx")
+            || fileName.includes("Dungeon_Planes_")
         )
             ?
             read1(fileName)
