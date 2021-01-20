@@ -51,8 +51,11 @@ function getCsvValue(t, v) {
 let typelist = new Set(["array", "string", "lang", "number", "String"])
 
 
-async function read1(fileName) {
+async function read1(fileName, st) {
+    time("解析表格" + fileName);
+    console.log(fileName, "文件尺寸:", st.size);
     let sheets = xlsx.parse(fileName);
+    timeEnd("解析表格" + fileName);
 
     let s = sheets[0];
 
@@ -105,9 +108,10 @@ async function genAFile(fileName, st) {
             || fileName.endsWith("Dungeon_Planes_Buff.xlsx")
             || fileName.endsWith("Dungeon_Planes_Buff_Group.xlsx")
             || fileName.includes("Dungeon_Planes_")
+            || fileName.endsWith("Event_Gift_Magic_Call.xlsx")
         )
             ?
-            read1(fileName)
+            read1(fileName, st)
             :
             read2(fileName, st)
     );
@@ -368,7 +372,8 @@ let specialKeys = {
 let specialKeys2 = {
     "Hero_Break": [["id", "type"], ["id", "type", "count"]],
     "Hero_Star": [["id"], ["star"]],
-    "Role_Name": [["sex", "type"], ["sex", "type", "name"]]
+    "Role_Name": [["sex", "type"], ["sex", "type", "name"]],
+    "Warorder_Awards":[["id"],["unlock"]]
 }
 
 
