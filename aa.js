@@ -361,6 +361,7 @@ async function genAFile(fileName, st) {
 /** @type {{ [sheetName: string]: string[] }} */
 let specialKeys = {
     // "Hero_Break": ["id", "type", "count"]
+    "Dungeon_Planes_Guard_Reward": ["cid"],
     "Combat_Attr": ["atom"],
     "Combat_Halo": ["pos_info"],
     "Dungeon_Endless": ["type", "floor"],
